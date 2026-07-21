@@ -313,8 +313,36 @@ html.has-custom-cursor, html.has-custom-cursor * { cursor: none !important; }
     animation: shimmer 2s linear infinite;
 }
 
-/* Marquee track */
-.marquee-track { display: flex; width: max-content; animation: marquee 40s linear infinite; }
+/* Endless marquee track — the container animates X so children look infinite */
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 32s linear infinite;
+    align-items: center;
+}
+@keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-33.333%); }
+}
+
+/* Animated hairline that draws itself when hovered */
+.hairline-draw {
+    display: inline-block; height: 1px; width: 40px;
+    background: currentColor; transform-origin: left;
+    transform: scaleX(0.4); transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.hairline-draw:hover, .group:hover .hairline-draw { transform: scaleX(1); }
+
+/* Rotating gold ornament */
+.ornament-spin { animation: spin-slow 24s linear infinite; }
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+
+/* Subtle floating up-down for decorative badges */
+.float-y { animation: floatY 6s ease-in-out infinite; }
+@keyframes floatY {
+    0%,100% { transform: translateY(0); }
+    50%     { transform: translateY(-8px); }
+}
 
 /* Hero title */
 .hero-title {

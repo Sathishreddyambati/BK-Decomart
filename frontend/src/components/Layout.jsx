@@ -4,6 +4,7 @@ import FloatingWhatsApp from "./FloatingWhatsApp";
 import CinematicIntro from "./CinematicIntro";
 import ScrollProgress from "./ScrollProgress";
 import CustomCursor from "./CustomCursor";
+import CurtainTransition from "./CurtainTransition";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -48,6 +49,7 @@ export default function Layout({ children }) {
     return (
         <>
             <CinematicIntro />
+            <CurtainTransition />
             <ScrollProgress />
             <Nav />
             <main data-testid="site-main">{children}</main>

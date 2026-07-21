@@ -7,6 +7,10 @@ import Reveal from "../components/Reveal";
 import BeforeAfter from "../components/BeforeAfter";
 import CinematicHero from "../components/CinematicHero";
 import Showreel from "../components/Showreel";
+import Marquee from "../components/Marquee";
+import Counter from "../components/Counter";
+import Tilt from "../components/Tilt";
+import TextReveal from "../components/TextReveal";
 
 const FEATURED = ["curtains", "wallpapers", "flooring", "carpets"];
 const ROOMS = [
@@ -35,17 +39,19 @@ export default function Home() {
                     <Reveal className="md:col-span-5">
                         <div className="relative hover-zoom">
                             <LuxImg name="brand-story" alt="Craftsmanship" className="w-full aspect-portrait object-cover" />
-                            <span className="absolute -bottom-6 -right-6 md:right-8 bg-champagne text-matte px-6 py-3 text-xs uppercase tracking-[0.2em]">
+                            <span className="absolute -bottom-6 -right-6 md:right-8 bg-champagne text-matte px-6 py-3 text-xs uppercase tracking-[0.2em] float-y">
                                 Since 1995
                             </span>
+                            <svg className="ornament-spin absolute -top-6 -left-6 text-champagne" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 2 L26 20 L44 24 L26 28 L24 46 L22 28 L4 24 L22 20 Z" fill="currentColor" opacity="0.55" />
+                            </svg>
                         </div>
                     </Reveal>
                     <Reveal className="md:col-span-7 md:pl-8" delay={200}>
                         <p className="overline"><span className="hairline" /> Our Story</p>
-                        <h2 className="section-title mt-4">
-                            Three decades of dressing<br />
-                            <span className="font-serif-italic text-walnut">the finest homes in Madurai.</span>
-                        </h2>
+                        <TextReveal as="h2" className="section-title mt-4">
+                            Three decades of dressing the finest homes in Madurai.
+                        </TextReveal>
                         <p className="mt-8 text-base leading-relaxed text-charcoal font-light max-w-xl">
                             BK Decomart began as a small showroom on Sivagangai Main Road in 1995,
                             with one belief — that the fabrics, floors and finishes of a home should
@@ -55,9 +61,9 @@ export default function Home() {
                             by name.
                         </p>
                         <div className="mt-8 grid grid-cols-3 gap-6 max-w-lg">
-                            <div><p className="font-serif text-4xl text-champagne">30+</p><p className="overline mt-1">Years</p></div>
-                            <div><p className="font-serif text-4xl text-champagne">5000+</p><p className="overline mt-1">Homes</p></div>
-                            <div><p className="font-serif text-4xl text-champagne">10</p><p className="overline mt-1">Collections</p></div>
+                            <div><p className="font-serif text-4xl text-champagne"><Counter to={30} suffix="+" /></p><p className="overline mt-1">Years</p></div>
+                            <div><p className="font-serif text-4xl text-champagne"><Counter to={5000} suffix="+" duration={2400} /></p><p className="overline mt-1">Homes</p></div>
+                            <div><p className="font-serif text-4xl text-champagne"><Counter to={10} /></p><p className="overline mt-1">Collections</p></div>
                         </div>
                         <Link to="/about" className="btn-outline mt-10 inline-flex" data-testid="story-about-btn">
                             Read Our Story <ArrowRight size={16} strokeWidth={1.4} />
@@ -85,25 +91,30 @@ export default function Home() {
                             const c = CATEGORIES.find((x) => x.slug === slug);
                             return (
                                 <Reveal key={slug} delay={i * 120}>
-                                    <Link to={`/products/${slug}`} className="block group" data-testid={`featured-${slug}`}>
-                                        <div className="hover-zoom aspect-portrait">
-                                            <LuxImg name={c.img} alt={c.name} className="w-full h-full object-cover" />
-                                        </div>
-                                        <div className="mt-5 flex items-start justify-between gap-4">
-                                            <div>
-                                                <p className="mag-number">— 0{i + 1}</p>
-                                                <h3 className="font-serif text-2xl mt-1">{c.name}</h3>
-                                                <p className="text-xs text-charcoal/70 mt-1">{c.subtitle}</p>
+                                    <Tilt strength={6}>
+                                        <Link to={`/products/${slug}`} className="block group" data-testid={`featured-${slug}`}>
+                                            <div className="hover-zoom aspect-portrait">
+                                                <LuxImg name={c.img} alt={c.name} className="w-full h-full object-cover" />
                                             </div>
-                                            <ArrowRight size={18} strokeWidth={1.4} className="mt-3 text-champagne group-hover:translate-x-1 transition-transform" />
-                                        </div>
-                                    </Link>
+                                            <div className="mt-5 flex items-start justify-between gap-4">
+                                                <div>
+                                                    <p className="mag-number">— 0{i + 1}</p>
+                                                    <h3 className="font-serif text-2xl mt-1">{c.name}</h3>
+                                                    <p className="text-xs text-charcoal/70 mt-1">{c.subtitle}</p>
+                                                </div>
+                                                <ArrowRight size={18} strokeWidth={1.4} className="mt-3 text-champagne group-hover:translate-x-1 transition-transform" />
+                                            </div>
+                                        </Link>
+                                    </Tilt>
                                 </Reveal>
                             );
                         })}
                     </div>
                 </div>
             </section>
+
+            {/* ---------- MARQUEE RIBBON ---------- */}
+            <Marquee />
 
             {/* ---------- SHOP BY ROOM (Bento) ---------- */}
             <section className="py-24 md:py-32 bg-ivory" data-testid="home-rooms">
