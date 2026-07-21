@@ -6,6 +6,7 @@ import LuxImg from "../components/LuxImg";
 import Reveal from "../components/Reveal";
 import BeforeAfter from "../components/BeforeAfter";
 import CinematicHero from "../components/CinematicHero";
+import Showreel from "../components/Showreel";
 
 const FEATURED = ["curtains", "wallpapers", "flooring", "carpets"];
 const ROOMS = [
@@ -198,6 +199,9 @@ export default function Home() {
                     </Reveal>
                 </div>
             </section>
+
+            {/* ---------- SHOWREEL ---------- */}
+            <Showreel />
 
             {/* ---------- WHY BK ---------- */}
             <section className="py-24 md:py-32 bg-beige" data-testid="home-why">

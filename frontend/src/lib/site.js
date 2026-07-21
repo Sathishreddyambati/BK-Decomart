@@ -19,6 +19,9 @@ export const SITE = {
         facebook: "https://facebook.com/",
         youtube: "https://youtube.com/",
     },
+    // Optional: set to a real MP4/webm URL to replace the cinematic slideshow
+    // in the homepage Showreel section with actual showroom footage.
+    showreelUrl: "",
 };
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
