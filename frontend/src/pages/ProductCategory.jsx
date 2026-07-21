@@ -13,6 +13,9 @@ export default function ProductCategory() {
 
     const related = CATEGORIES.filter((c) => c.slug !== slug).slice(0, 3);
 
+    // Multiple lifestyle images per category (curated from AI-generated bank)
+    const lifestyle = [cat.img, cat.room, "brand-story", "gallery-1", "gallery-2"];
+
     const shareMsg = `Look at BK Decomart's ${cat.name} collection — ${window.location.origin}/products/${cat.slug}`;
 
     const handleShare = async () => {
@@ -151,6 +154,33 @@ export default function ProductCategory() {
                             {cat.care.map((c) => <li key={c}>· {c}</li>)}
                         </ul>
                     </Reveal>
+                </div>
+            </section>
+
+            {/* Lifestyle gallery — multiple AI lifestyle shots */}
+            <section className="py-24 md:py-32 bg-ivory">
+                <div className="max-w-[1440px] mx-auto px-6 md:px-10">
+                    <Reveal className="mb-12 max-w-2xl">
+                        <p className="overline"><span className="hairline" /> In the Room</p>
+                        <h2 className="section-title mt-4">{cat.name} <span className="font-serif-italic text-walnut">at home.</span></h2>
+                    </Reveal>
+                    <div className="grid grid-cols-12 gap-4 md:gap-6 auto-rows-[220px] md:auto-rows-[280px]">
+                        <Reveal className="col-span-12 md:col-span-7 md:row-span-2 hover-zoom">
+                            <LuxImg name={lifestyle[0]} alt="" className="w-full h-full object-cover" />
+                        </Reveal>
+                        <Reveal delay={100} className="col-span-6 md:col-span-5 hover-zoom">
+                            <LuxImg name={lifestyle[1]} alt="" className="w-full h-full object-cover" />
+                        </Reveal>
+                        <Reveal delay={200} className="col-span-6 md:col-span-5 hover-zoom">
+                            <LuxImg name={lifestyle[2]} alt="" className="w-full h-full object-cover" />
+                        </Reveal>
+                        <Reveal delay={300} className="col-span-6 md:col-span-6 hover-zoom">
+                            <LuxImg name={lifestyle[3]} alt="" className="w-full h-full object-cover" />
+                        </Reveal>
+                        <Reveal delay={400} className="col-span-6 md:col-span-6 hover-zoom">
+                            <LuxImg name={lifestyle[4]} alt="" className="w-full h-full object-cover" />
+                        </Reveal>
+                    </div>
                 </div>
             </section>
 

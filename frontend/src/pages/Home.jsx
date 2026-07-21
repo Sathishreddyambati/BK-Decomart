@@ -5,6 +5,7 @@ import { CATEGORIES, TESTIMONIALS } from "../lib/products";
 import LuxImg from "../components/LuxImg";
 import Reveal from "../components/Reveal";
 import BeforeAfter from "../components/BeforeAfter";
+import CinematicHero from "../components/CinematicHero";
 
 const FEATURED = ["curtains", "wallpapers", "flooring", "carpets"];
 const ROOMS = [
@@ -24,64 +25,8 @@ const WHY = [
 export default function Home() {
     return (
         <div>
-            {/* ---------- HERO ---------- */}
-            <section className="relative min-h-[100svh] w-full overflow-hidden" data-testid="home-hero">
-                <LuxImg
-                    name="hero-living"
-                    alt="Luxury living room"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    loading="eager"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-ivory/40 via-ivory/10 to-ivory/60" />
-                <div className="absolute inset-0 bg-gradient-to-r from-ivory/70 via-transparent to-transparent" />
-                <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 pt-40 md:pt-52 pb-20 min-h-[100svh] flex flex-col justify-between">
-                    <div className="max-w-3xl">
-                        <p className="overline animate-fade-up" style={{ animationDelay: "0.1s" }}>
-                            <span className="hairline" /> {SITE.name} · Since {SITE.since}
-                        </p>
-                        <h1 className="hero-title mt-6 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-                            Come, <em>Let's Dressup</em><br />Your Home.
-                        </h1>
-                        <p className="mt-8 max-w-xl text-base md:text-lg text-charcoal font-light leading-relaxed animate-fade-up" style={{ animationDelay: "0.5s" }}>
-                            A three-decade Madurai atelier of curtains, blinds, wallpapers, flooring,
-                            carpets and mattresses. Curated, cut, stitched and installed with the
-                            quiet obsession of a family business.
-                        </p>
-                        <div className="mt-10 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: "0.7s" }}>
-                            <Link to="/products" className="btn-primary" data-testid="hero-explore-btn">
-                                Explore Collections <ArrowRight size={16} strokeWidth={1.4} />
-                            </Link>
-                            <a href={waLink()} target="_blank" rel="noreferrer" className="btn-outline" data-testid="hero-whatsapp-btn">
-                                <MessageCircle size={16} strokeWidth={1.4} /> Book a Consultation
-                            </a>
-                        </div>
-                    </div>
-
-                    <div className="hidden md:flex justify-between items-end gap-8 mt-16">
-                        <div className="text-xs uppercase tracking-[0.24em] text-charcoal/70">
-                            Scroll <br />
-                            <span className="inline-block w-px h-16 bg-champagne mt-2" />
-                        </div>
-                        <div className="flex gap-10">
-                            <div>
-                                <p className="mag-number">— 01</p>
-                                <p className="overline mt-1">Curated</p>
-                                <p className="font-serif text-2xl mt-1">10 Collections</p>
-                            </div>
-                            <div>
-                                <p className="mag-number">— 02</p>
-                                <p className="overline mt-1">Delivered</p>
-                                <p className="font-serif text-2xl mt-1">Across Tamil Nadu</p>
-                            </div>
-                            <div>
-                                <p className="mag-number">— 03</p>
-                                <p className="overline mt-1">Established</p>
-                                <p className="font-serif text-2xl mt-1">Since 1995</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            {/* ---------- CINEMATIC HERO ---------- */}
+            <CinematicHero />
 
             {/* ---------- BRAND STORY ---------- */}
             <section className="py-24 md:py-32 bg-ivory" data-testid="home-story">

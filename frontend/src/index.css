@@ -97,6 +97,124 @@ body {
 ::-webkit-scrollbar-track { background: #F5F0E6; }
 ::-webkit-scrollbar-thumb { background: #C9A96C; border-radius: 4px; }
 
+/* ============ CINEMATIC MOTION ============ */
+
+/* Dust particles floating in light rays */
+.dust-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255,246,220,0.95) 0%, rgba(255,246,220,0.15) 60%, transparent 100%);
+    filter: blur(0.5px);
+    animation: dust-drift 12s linear infinite;
+    opacity: 0;
+    will-change: transform, opacity;
+}
+@keyframes dust-drift {
+    0%   { transform: translate(0, 0) scale(0.8); opacity: 0; }
+    10%  { opacity: 1; }
+    50%  { transform: translate(30px, -60px) scale(1.1); opacity: 0.8; }
+    90%  { opacity: 0.5; }
+    100% { transform: translate(60px, -140px) scale(0.7); opacity: 0; }
+}
+
+/* Ken Burns pans for cinematic intro */
+.pan-kb-in    { animation: kbIn    2.4s ease-out both; }
+.pan-kb-left  { animation: kbLeft  2.4s ease-out both; }
+.pan-kb-right { animation: kbRight 2.4s ease-out both; }
+.pan-kb-up    { animation: kbUp    2.4s ease-out both; }
+.pan-kb-down  { animation: kbDown  2.4s ease-out both; }
+@keyframes kbIn    { from { transform: scale(1.08) translate(0,0);   } to { transform: scale(1.18) translate(0,0);   } }
+@keyframes kbLeft  { from { transform: scale(1.12) translate(2%,0);  } to { transform: scale(1.20) translate(-2%,0); } }
+@keyframes kbRight { from { transform: scale(1.12) translate(-2%,0); } to { transform: scale(1.20) translate(2%,0);  } }
+@keyframes kbUp    { from { transform: scale(1.12) translate(0,2%);  } to { transform: scale(1.20) translate(0,-2%); } }
+@keyframes kbDown  { from { transform: scale(1.12) translate(0,-2%); } to { transform: scale(1.20) translate(0,2%);  } }
+
+/* Hero slow ken burns */
+.hero-kenburns { animation: heroKB 12s ease-in-out infinite alternate; }
+@keyframes heroKB {
+    from { transform: scale(1.04) translate3d(-0.5%, 0.5%, 0); }
+    to   { transform: scale(1.12) translate3d(0.5%, -0.5%, 0); }
+}
+
+/* Curtain sway on either edge of hero */
+.curtain-sway { transform-origin: top center; animation: sway 7s ease-in-out infinite; filter: blur(6px); mix-blend-mode: soft-light; }
+.curtain-sway-right { animation-delay: -3.5s; }
+@keyframes sway {
+    0%,100% { transform: skewX(0deg) translateX(0); }
+    50%     { transform: skewX(1.4deg) translateX(3px); }
+}
+
+/* Scroll cue line */
+.scroll-cue { position: relative; overflow: hidden; }
+.scroll-cue::after {
+    content: "";
+    position: absolute; left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: #FAF9F6;
+    animation: scrollCue 2.4s ease-in-out infinite;
+}
+@keyframes scrollCue {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+/* ============ MAGNETIC / RIPPLE BUTTONS ============ */
+.magnetic { transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); }
+
+.ripple { position: relative; overflow: hidden; }
+.ripple::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), rgba(212,175,55,0.35) 0%, transparent 40%);
+    opacity: 0; transition: opacity 0.6s ease;
+    pointer-events: none;
+}
+.ripple:active::after { opacity: 1; transition: opacity 0.05s; }
+
+/* ============ CUSTOM CURSOR (desktop) ============ */
+html.has-custom-cursor, html.has-custom-cursor * { cursor: none !important; }
+.custom-cursor-dot {
+    position: fixed; top: 0; left: 0;
+    width: 6px; height: 6px; border-radius: 999px;
+    background: #D4AF37;
+    pointer-events: none; z-index: 9999;
+    mix-blend-mode: difference;
+    will-change: transform;
+}
+.custom-cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 32px; height: 32px; border-radius: 999px;
+    border: 1px solid rgba(212,175,55,0.6);
+    pointer-events: none; z-index: 9998;
+    transition: width 0.3s, height 0.3s, background-color 0.3s;
+    will-change: transform;
+}
+.custom-cursor-ring.is-hover {
+    background: rgba(212,175,55,0.12);
+    border-color: rgba(212,175,55,0.9);
+}
+
+/* ============ LIGHTBOX ============ */
+.lightbox-backdrop {
+    position: fixed; inset: 0; z-index: 90;
+    background: rgba(26,26,26,0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Masonry */
+.masonry {
+    column-count: 1;
+    column-gap: 1rem;
+}
+@media (min-width: 640px) { .masonry { column-count: 2; } }
+@media (min-width: 1024px){ .masonry { column-count: 3; } }
+@media (min-width: 1440px){ .masonry { column-count: 4; } }
+.masonry > * { break-inside: avoid; margin-bottom: 1rem; display: block; }
+
 /* Nav glass */
 .nav-glass {
     background: rgba(250, 249, 246, 0.82);
