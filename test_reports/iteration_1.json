@@ -1,0 +1,43 @@
+{
+  "summary": "First-iteration full-stack testing of BK Decomart luxury home décor MVP. Backend: 8/8 pytest tests pass (health, generated-images list, static image serving, /api/visualize invalid-product 400, /api/visualize happy-path via public URL treated as soft-pass because Cloudflare ingress returns 502 after ~30s while Nano Banana still processes — direct localhost call to /api/visualize returned 200 with a proper data:image/jpeg;base64,... payload, confirming the backend logic itself works correctly). Frontend: Home hero + sticky nav + glass-nav-on-scroll + floating WhatsApp all work; all 6 nav routes render without errors; ProductCategory (/products/curtains) renders hero + sticky sidebar (WhatsApp/Call/Quote) + features/benefits/materials/colours/care + related; /products/invalid-slug-xyz redirects to /products via <Navigate/>; 404 page renders custom copy; FAQ accordion expands; Footer has all quick links; Contact form correctly opens WhatsApp deep-link https://wa.me/919787713802?text=... with pre-filled name/phone/interest/message; Visualizer disables Generate button and shows 'Rendering…' during API call, re-enables and shows toast error on failure.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/static/img/generated/*.png", "issue": "Files named *.png are actually JPEG bytes (magic FF D8 FF). Browsers/img tags still render fine because they sniff, but strict clients relying on Content-Type or extension may be misled. Consider renaming to .jpg or re-encoding to real PNG."},
+      {"endpoint": "/api/visualize", "issue": "Public URL requests timeout at Cloudflare ingress (~30s) with HTML 502 while Nano Banana still runs. Backend itself returns 200 correctly when called on localhost. Not a backend bug — infrastructure ingress timeout. Consider optimising: (a) reduce image size before sending to model, (b) stream progress, or (c) document the constraint in UI."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "AI Room Visualizer generate on public URL", "issue": "Because /api/visualize takes >30s and Cloudflare ingress returns 502, real generation fails end-to-end on the public preview URL. Frontend correctly surfaces toast error and re-enables button. Backend works locally. This is acceptable per test brief (soft-pass) but user-facing UX is 'toast error every time' on the deployed preview.", "affected_selectors": ["[data-testid=\"viz-generate-btn\"]", "[data-testid=\"visualizer-canvas\"]"]}
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "OPTIONAL/MINOR: Rename or re-encode pre-generated files so *.png actually contains PNG bytes (currently JPEG payloads with .png extension). Not user-visible.",
+    "IMPORTANT: /api/visualize is exceeded by Cloudflare ingress timeout on the public preview URL — end-to-end AI generation currently fails from the deployed site even though the backend works correctly on localhost. Consider (a) shrinking the upload before sending to Gemini, (b) using a background/job pattern with polling, or (c) surfacing a friendlier 'This can take up to a minute — please try again if it times out' message.",
+    "No other frontend/backend bugs found. All 14 items in the review request pass or are acceptable soft-passes."
+  ],
+  "critical_code_review_comments": [
+    "server.py:149 — StaticFiles is mounted AFTER include_router. FastAPI handles it fine but conventionally middleware/mounts are configured before app.include_router for clarity.",
+    "server.py:151-157 — CORSMiddleware is added AFTER app.include_router. This still works but is unusual; safer to add before routes.",
+    "server.py:23 — EMERGENT_LLM_KEY is read at import-time. If /api/visualize is called before load_dotenv finishes (impossible here but pattern-wise) it would be None. Acceptable.",
+    "Visualizer.jsx:52 — 90s axios timeout is longer than Cloudflare ingress cap (~30-60s) so it will always be the ingress that errors first on the deployed URL, not the client. Consider matching or using a job queue.",
+    "Pre-generated static images have .png extension but JPEG magic bytes — minor content-type/extension mismatch."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/__init__.py"
+  ],
+  "success_rate": {"backend": "100% (8/8 tests pass; 1 soft-pass on public visualize due to ingress timeout)", "frontend": "100% (all 9 flow checks pass)"},
+  "test_credentials": "N/A - no auth in this app",
+  "seed_data_creation": "None. Used the backend's own /api/static/img/generated/hero-living.png as sample upload for Visualizer + backend visualize tests.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend + Frontend MVP for BK Decomart Madurai luxury décor site is functionally complete. Only real user-facing concern is that /api/visualize on the deployed preview URL times out at Cloudflare ingress (~30-60s) before Nano Banana finishes; localhost call to same endpoint works and returns proper data:image/jpeg;base64 payload. Pre-generated static assets are JPEG with .png extension — cosmetic mismatch only. Reuse /app/backend/tests/backend_test.py for regression."
+}

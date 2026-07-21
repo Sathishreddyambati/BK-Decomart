@@ -1,73 +1,152 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, UploadFile, File, Form, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import base64
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from pydantic import BaseModel
 import uuid
-from datetime import datetime, timezone
 
+from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
-app = FastAPI()
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
+NANO_BANANA_MODEL = "gemini-3.1-flash-image-preview"
 
-# Create a router with the /api prefix
+STATIC_DIR = ROOT_DIR / "static"
+STATIC_DIR.mkdir(exist_ok=True)
+(STATIC_DIR / "img" / "generated").mkdir(parents=True, exist_ok=True)
+(STATIC_DIR / "img" / "visualizer").mkdir(parents=True, exist_ok=True)
+
+app = FastAPI(title="BK Decomart API")
 api_router = APIRouter(prefix="/api")
 
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"service": "BK Decomart", "status": "ok"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+@api_router.get("/health")
+async def health():
+    return {"status": "ok", "llm_key_present": bool(EMERGENT_LLM_KEY)}
 
-# Include the router in the main app
+
+@api_router.get("/generated-images")
+async def list_generated_images():
+    """Returns the list of pre-generated luxury interior image names available."""
+    d = STATIC_DIR / "img" / "generated"
+    if not d.exists():
+        return {"images": []}
+    files = sorted([p.stem for p in d.glob("*.png") if p.stat().st_size > 5000])
+    return {"images": files}
+
+
+# ---------- AI Room Visualizer ----------
+
+VISUALIZER_PRESETS = {
+    "curtains": (
+        "Redesign this room by adding elegant floor-to-ceiling {style} curtains "
+        "in warm ivory linen at the windows. Keep the existing room geometry, "
+        "walls, furniture and camera angle identical. Photorealistic magazine "
+        "quality, warm natural light, no text or watermark."
+    ),
+    "blinds": (
+        "Redesign this room by adding tasteful {style} blinds in warm beige at "
+        "the windows. Keep the existing room geometry, walls, furniture and "
+        "camera angle identical. Photorealistic magazine quality, warm natural "
+        "light, no text or watermark."
+    ),
+    "wallpaper": (
+        "Redesign this room by covering the main accent wall with an elegant "
+        "{style} designer wallpaper in ivory and champagne gold. Keep the existing "
+        "room geometry, furniture and camera angle identical. Photorealistic "
+        "magazine quality, warm natural light, no text or watermark."
+    ),
+    "flooring": (
+        "Redesign this room by replacing the floor with premium {style} in warm "
+        "walnut tones. Keep the existing room geometry, walls, furniture and "
+        "camera angle identical. Photorealistic magazine quality, warm natural "
+        "light, no text or watermark."
+    ),
+    "carpet": (
+        "Redesign this room by adding a large hand-knotted {style} in ivory and "
+        "champagne under the central furniture. Keep the existing room geometry, "
+        "walls, furniture and camera angle identical. Photorealistic magazine "
+        "quality, warm natural light, no text or watermark."
+    ),
+}
+
+
+class VisualizeResponse(BaseModel):
+    id: str
+    image_data_url: str
+
+
+@api_router.post("/visualize", response_model=VisualizeResponse)
+async def visualize_room(
+    image: UploadFile = File(...),
+    product: str = Form(...),
+    style: str = Form("eyelet"),
+):
+    """Accepts a room photo and returns a Nano Banana edited preview showing the
+    chosen product applied to the room."""
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=500, detail="LLM key not configured")
+    preset = VISUALIZER_PRESETS.get(product)
+    if not preset:
+        raise HTTPException(status_code=400, detail=f"Unsupported product '{product}'")
+
+    raw = await image.read()
+    if len(raw) > 8 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="Image too large (max 8MB)")
+    b64_in = base64.b64encode(raw).decode("utf-8")
+
+    prompt = preset.format(style=style or "premium")
+
+    try:
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"visualize-{uuid.uuid4().hex[:12]}",
+            system_message=(
+                "You are a luxury interior visualiser. You edit uploaded room "
+                "photos to show new décor products while preserving the room's "
+                "layout and camera angle."
+            ),
+        )
+        chat.with_model("gemini", NANO_BANANA_MODEL).with_params(modalities=["image", "text"])
+        msg = UserMessage(text=prompt, file_contents=[ImageContent(b64_in)])
+        _text, images = await chat.send_message_multimodal_response(msg)
+    except Exception as e:
+        logging.exception("visualize call failed")
+        raise HTTPException(status_code=502, detail=f"Visualiser failed: {e}") from e
+
+    if not images:
+        raise HTTPException(status_code=502, detail="No image returned by model")
+
+    out_id = uuid.uuid4().hex[:16]
+    out_path = STATIC_DIR / "img" / "visualizer" / f"{out_id}.png"
+    out_bytes = base64.b64decode(images[0]["data"])
+    out_path.write_bytes(out_bytes)
+
+    data_url = f"data:{images[0].get('mime_type', 'image/png')};base64,{images[0]['data']}"
+    return VisualizeResponse(id=out_id, image_data_url=data_url)
+
+
 app.include_router(api_router)
+
+# Serve static generated images under /api/static so ingress routes to backend
+app.mount("/api/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -77,12 +156,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 )
 logger = logging.getLogger(__name__)
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
