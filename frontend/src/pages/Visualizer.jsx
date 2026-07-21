@@ -25,14 +25,47 @@ export default function Visualizer() {
 
     const currentStyles = PRODUCTS.find((p) => p.key === product)?.styles || [];
 
-    const onFile = (f) => {
+    // Downscale the uploaded image to a max dimension so the AI call stays
+    // within Cloudflare's ingress window.
+    const downscale = (file, maxDim = 1280) => new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+            const w = Math.round(img.width * scale);
+            const h = Math.round(img.height * scale);
+            const canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            canvas.toBlob(
+                (blob) => {
+                    URL.revokeObjectURL(url);
+                    if (!blob) return reject(new Error("Failed to compress"));
+                    const compressed = new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+                    resolve(compressed);
+                },
+                "image/jpeg",
+                0.85
+            );
+        };
+        img.onerror = () => reject(new Error("Invalid image"));
+        img.src = url;
+    });
+
+    const onFile = async (f) => {
         if (!f) return;
         if (!f.type.startsWith("image/")) { toast.error("Please choose an image file"); return; }
-        if (f.size > 8 * 1024 * 1024) { toast.error("Image must be under 8MB"); return; }
-        setFile(f);
-        setResult(null);
-        const url = URL.createObjectURL(f);
-        setPreview(url);
+        if (f.size > 12 * 1024 * 1024) { toast.error("Image must be under 12MB"); return; }
+        try {
+            const compressed = await downscale(f);
+            setFile(compressed);
+            setResult(null);
+            const url = URL.createObjectURL(compressed);
+            setPreview(url);
+        } catch (e) {
+            toast.error("Could not read image");
+        }
     };
 
     const onDrop = (e) => {
@@ -166,8 +199,9 @@ export default function Visualizer() {
                         </button>
 
                         <p className="text-xs text-charcoal/60 leading-relaxed">
-                            Renders are AI approximations for inspiration only. Book a free
-                            consultation for accurate site-measured proposals.
+                            AI renders take roughly 20–40 seconds and are photo-realistic
+                            approximations for inspiration. Book a free consultation for
+                            an accurate, site-measured proposal.
                         </p>
                     </div>
 
