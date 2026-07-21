@@ -1,0 +1,141 @@
+{
+  "theme": "light",
+  "archetype": "LUXURY",
+  "brand": {
+    "name": "BK Decomart",
+    "tagline": "Come, Let's Dressup Your Home",
+    "established": "1995",
+    "contact": {
+      "address": "12, Sivagangai Main Road, Gomathipuram, Madurai – 625020, Tamil Nadu, India",
+      "phone": "+91 97877 13802",
+      "email": "bkdecomartdigital@gmail.com"
+    }
+  },
+  "typography": {
+    "pairing": {
+      "headings": "Bodoni Moda",
+      "body": "Manrope"
+    },
+    "instructions": "Use Bodoni Moda (italicized optionally for elegant emphasis) for all H1/H2 headings. Keep tracking tight on headings. Use Manrope for high-legibility, geometric body copy.",
+    "hierarchy": {
+      "h1": "text-5xl md:text-6xl+ font-serif tracking-tight leading-[1.1]",
+      "h2": "text-3xl md:text-4xl font-serif tracking-tight leading-[1.2]",
+      "h3": "text-xl md:text-2xl font-serif leading-[1.3]",
+      "body": "text-base font-sans font-light tracking-wide leading-relaxed",
+      "overline": "text-xs font-sans uppercase tracking-[0.2em] font-medium text-champagneGold"
+    }
+  },
+  "colors": {
+    "palette": {
+      "ivoryWhite": "#FAF9F6",
+      "warmBeige": "#F5F0E6",
+      "champagneGold": "#D4AF37",
+      "naturalLinen": "#E3D5C8",
+      "walnutBrown": "#4B3621",
+      "matteBlack": "#1A1A1A",
+      "charcoalGrey": "#333333",
+      "logoRed": "#D32F2F"
+    },
+    "mapping": {
+      "background_primary": "ivoryWhite",
+      "background_secondary": "warmBeige",
+      "text_primary": "matteBlack",
+      "text_secondary": "charcoalGrey",
+      "accent": "champagneGold",
+      "border": "naturalLinen",
+      "forbidden": ["pure black (#000)", "pure white (#fff)", "using red (#D32F2F) anywhere except the actual logo mark"]
+    }
+  },
+  "visual_enhancers": {
+    "surfaces": "Minimal glassmorphism (backdrop-blur-xl bg-[#FAF9F6]/90 border-b border-[#E3D5C8]/40) used strictly for the sticky nav. Use solid, soft-shadowed cards elsewhere to maintain warmth.",
+    "shadows": {
+      "soft": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+      "deep": "shadow-[0_20px_40px_rgb(0,0,0,0.08)]"
+    },
+    "borders": "Ultra-thin (1px) borders in naturalLinen or champagneGold (at 30% opacity) for structural separation."
+  },
+  "motion": {
+    "global": "Cinematic and deliberate. Elements should fade up and drift into place slowly.",
+    "loader": "Full-screen ivory overlay with the BK Decomart logo gently revealing, accompanied by the tagline, then dissolving.",
+    "hover": "Images scale up slightly (scale-105) inside hidden overflow containers with smooth 0.7s easing. Buttons fill with champagne gold gracefully.",
+    "scroll": "Parallax on large hero images. Sections fade in using Framer Motion (`initial={{ opacity: 0, y: 30 }}`)."
+  },
+  "layouts": {
+    "spacing": "Extremely generous. Use py-24 or py-32 for section padding. Components should have ample breathing room.",
+    "grid": "Bento-style grids for 'Shop by Room' but with distinct asymmetry. E.g., one large column spanning 2 rows, next to two smaller stacked squares."
+  },
+  "components": {
+    "buttons": {
+      "primary": "Solid matteBlack background, ivoryWhite text, pill-shaped or subtle rounded corners (rounded-sm). Hover state shifts to walnutBrown with a smooth transition.",
+      "secondary": "Transparent background, champagneGold 1px border, matteBlack text, uppercase tracking-widest.",
+      "whatsapp_float": "Fixed bottom-right, z-50. Do not use generic green if it breaks the palette too much—consider a sleek dark/gold wrapper around the WhatsApp icon, or the official green but elegantly styled with a soft shadow."
+    },
+    "cards": {
+      "product": "Borderless, light background (warmBeige). Image container with aspect-[4/5]. Title centered below in serif, price/details in small sans-serif. 'View details' appears on hover."
+    },
+    "navigation": {
+      "style": "Transparent sticky nav that shrinks on scroll. backdrop-blur-xl with ivoryWhite/80 background activates when scrolled past 50px."
+    }
+  },
+  "media": {
+    "images": [
+      {
+        "url": "https://customer-assets-0z36b82j.emergentagent.net/job_e74266b5-e3c2-4874-b82b-588fe5f497b3/artifacts/vglnx93l_IMG-20260714-WA0007.jpg",
+        "category": "logo",
+        "description": "BK Decomart Original Logo"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1564078516393-cf04bd966897?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBsaXZpbmclMjByb29tJTIwbmF0dXJhbCUyMGxpZ2h0fGVufDB8fHx8MTc4NDYxNTkyOHww&ixlib=rb-4.1.0&q=85",
+        "category": "hero",
+        "description": "Cinematic luxury living room with natural light"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1599280611965-bef72efc48fb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHw0fHxjdXJ0YWlucyUyMGJsaW5kcyUyMHN1bmxpZ2h0fGVufDB8fHx8MTc4NDYxNTkyOHww&ixlib=rb-4.1.0&q=85",
+        "category": "products_curtains",
+        "description": "Elegant white curtains with sunlight"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1648634158203-199accfd7afc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjh8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjBiZWRyb29tJTIwY2FycGV0fGVufDB8fHx8MTc4NDYxNTkyOHww&ixlib=rb-4.1.0&q=85",
+        "category": "products_bedroom",
+        "description": "Luxury bedroom with plush carpet and bed"
+      }
+    ],
+    "image_treatment": "Images must feel warm and bathed in natural light. Ensure a subtle ivory or warm beige tint on overlays rather than harsh black, maintaining an airy, Architectural Digest magazine quality."
+  },
+  "pages": {
+    "homepage": {
+      "sections": [
+        "Cinematic Loading Animation (Logo reveal)",
+        "Sticky Transparent Nav",
+        "Full-screen Luxury Hero (Large image, parallax, 'Dressup Your Home' headline)",
+        "Brand Story (Since 1995, typographic focus, asymmetry)",
+        "Featured Collections (Carousel, seamless, overflow hidden)",
+        "Shop by Room (Bento grid layout)",
+        "Product Showcase (Curtains, Blinds, Wallpapers, Flooring...)",
+        "AI Room Visualizer Teaser (Split layout, dark accent or walnutBrown background to stand out)",
+        "Before & After Transformations (Image slider with drag handle)",
+        "Why BK Decomart (Icons/minimalist stats)",
+        "Testimonials (Editorial pull-quotes, serif font, large sizes)",
+        "Premium Gallery (Masonry layout)",
+        "Consultation CTA (Warm beige background, elegant form or click-to-call)",
+        "Luxury Footer"
+      ]
+    }
+  },
+  "tools_and_libraries": {
+    "icons": "lucide-react (thin, elegant stroke weight)",
+    "carousel": "embla-carousel-react",
+    "animations": "framer-motion (for scroll reveals and micro-interactions)",
+    "utilities": "clsx, tailwind-merge"
+  },
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "You MUST construct the app using HTML/Tailwind for marketing sections, allowing extreme flexibility in grids and overlaps.",
+    "Do not use default Shadcn cards for the main product showcases—create bespoke rectangular layouts.",
+    "Implement the font pair: Bodoni Moda (serif) for headings and Manrope (sans) for body copy. Inject these into Tailwind config.",
+    "All interactive and key informational elements MUST include a `data-testid` attribute to facilitate robust automated testing.",
+    "DO NOT use complete `transparent` background in header, overlays, any surface that has content under it. Ensure nav has a backdrop blur or color fill when scrolling.",
+    "Use light ivory backgrounds to simulate physical linen/paper. Avoid harsh pure white (#FFFFFF).",
+    "Preserve the original BK Decomart logo exactly as provided. Do not tint it or mask its colors.",
+    "Ensure 'AI Room Visualizer' has a distinct layout to feel highly technological yet framed elegantly."
+  ]
+}
